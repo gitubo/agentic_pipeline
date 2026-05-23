@@ -1,0 +1,16 @@
+version: "1.0"
+
+# Terms used to build the RAG query from scenario features.
+# static: always included
+# conditional: included when the corresponding feature is present
+
+static:
+  - "Movement Authority NID_MESSAGE 3"
+  - "Position Report NID_MESSAGE 0"
+  - "Linking Packet 72"
+
+conditional:
+  gradient_profile:
+    - "Gradient Profile Packet 21"
+  multi_section:
+    - "Static Speed Profile Packet 27"

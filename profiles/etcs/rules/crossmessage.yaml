@@ -1,0 +1,37 @@
+version: "subset026-3.6.0"
+
+rules:
+
+  - name: lrbg_consistency
+    description: "NID_LRBG must be consistent between PositionReport and MovementAuthority in the same session"
+    check:
+      message_a:
+        nid_message: 0
+        field: NID_LRBG
+      message_b:
+        nid_message: 3
+        field: NID_LRBG
+      relation: equal
+    error_code: CROSS_LRBG_INCONSISTENT
+    spec_ref: "Subset-026 §7.4.2.3"
+
+  - name: ack_references_ma
+    description: "The Acknowledgement must reference the T_TRAIN of the preceding MA"
+    check:
+      message_a:
+        nid_message: 8
+        field: T_TRAIN_ref
+      message_b:
+        nid_message: 3
+        field: T_TRAIN
+      relation: equal
+    error_code: CROSS_ACK_WRONG_REFERENCE
+    spec_ref: "Subset-026 §8.4.5"
+
+  - name: qscale_session_consistency
+    description: "Q_SCALE must be identical across all messages in the session"
+    check:
+      scope: session
+      field: Q_SCALE
+    error_code: CROSS_SESSION_FIELD_INCONSISTENT
+    spec_ref: "Subset-026 §7.4.1"

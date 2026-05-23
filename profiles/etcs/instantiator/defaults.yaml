@@ -1,0 +1,37 @@
+version: "subset026-3.6.0"
+
+session:
+  Q_SCALE: 1
+  T_TRAIN_step_ms: 100
+  NID_C: 100
+  L_DOUBTOVER: 0
+  L_DOUBTUNDER: 5
+  Q_DIRLRBG: 1
+  Q_DLRBG: 1
+  Q_DIRTRAIN: 1
+
+per_message:
+
+  - nid_message: 0
+    fields:
+      M_ACK: 0
+      Q_LENGTH: 1
+      L_TRAININT: 0
+
+  - nid_message: 3
+    fields:
+      M_ACK: 1
+      Q_NEWCOUNTRY: 0
+
+  - nid_message: 8
+    fields:
+      M_ACK: 0
+
+per_packet:
+
+  - nid_packet: 72
+    fields:
+      Q_NEWCOUNTRY: 0
+      Q_LINKORIENTATION: 1
+      Q_LINKREACTION: 1
+      Q_LOCACC: 12

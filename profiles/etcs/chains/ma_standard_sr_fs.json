@@ -1,0 +1,78 @@
+{
+  "id": "ma_standard_sr_fs",
+  "description": "Standard MA scenario: train starts in SR mode, receives a single-section Movement Authority at 160 km/h over 2000m, acknowledges it, and transitions to FS mode",
+  "features": {
+    "initial_mode": "SR",
+    "train_category": "P1",
+    "sections_count": 1,
+    "speeds_kmh": [160],
+    "eoa_m": 2000,
+    "gradient": false,
+    "overlap": false
+  },
+  "chain": [
+    {
+      "step": 1,
+      "nid_message": 0,
+      "name": "PositionReport",
+      "direction": "train→rbc",
+      "scenario_params": {
+        "V_TRAIN": 0,
+        "M_MODE": 3,
+        "M_LEVEL": 2,
+        "D_LRBG": 0
+      },
+      "to_instantiate": ["Q_SCALE", "NID_LRBG", "M_ACK", "Q_LENGTH"],
+      "notes": "Train reports initial position in SR mode — no MA received yet"
+    },
+    {
+      "step": 2,
+      "nid_message": 3,
+      "name": "MovementAuthority",
+      "direction": "rbc→train",
+      "scenario_params": {
+        "N_ITER": 1,
+        "V_RELEASESPEED": 30,
+        "Q_OVERLAP": 0,
+        "sections": [
+          {
+            "V_STATIC": 160,
+            "L_SECTION": 2000,
+            "Q_SECTIONTIMER": 0
+          }
+        ]
+      },
+      "to_instantiate": ["Q_SCALE", "M_ACK"],
+      "packets": [],
+      "notes": "RBC grants MA for 2000m at 160 km/h, no overlap, no section timer"
+    },
+    {
+      "step": 3,
+      "nid_message": 8,
+      "name": "Acknowledgement",
+      "direction": "train→rbc",
+      "scenario_params": {
+        "T_TRAIN_ref": 0
+      },
+      "to_instantiate": ["M_ACK", "T_TRAIN", "NID_LRBG"],
+      "notes": "Train acknowledges the MA — triggers SR→FS transition"
+    },
+    {
+      "step": 4,
+      "nid_message": 0,
+      "name": "PositionReport",
+      "direction": "train→rbc",
+      "mode_after": "FS",
+      "scenario_params": {
+        "V_TRAIN": 0,
+        "M_MODE": 0,
+        "M_LEVEL": 2,
+        "D_LRBG": 0
+      },
+      "to_instantiate": ["Q_SCALE", "NID_LRBG", "M_ACK", "Q_LENGTH"],
+      "notes": "Train reports in FS mode — MA transition complete"
+    }
+  ],
+  "validated": true,
+  "spec_version": "subset026-3.6.0"
+}

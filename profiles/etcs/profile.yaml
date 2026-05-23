@@ -1,0 +1,31 @@
+name: etcs
+spec_version: "subset026-3.6.0"
+description: "ETCS Level 2 — Subset-026 v3.6.0"
+
+paths:
+  spec: "./spec/subset026_v360.md"
+  chains: "./chains/"
+
+  rules:
+    messages: "./rules/messages.yaml"
+    crossmessage: "./rules/crossmessage.yaml"
+
+  statemachine: "./statemachines/etcs_modes.yaml"
+  kinematics: "./kinematics/categories.yaml"
+  instantiator_defaults: "./instantiator/defaults.yaml"
+
+  prompts:
+    normalizer: "./prompts/normalizer.md"
+    planner_system: "./prompts/planner_system.md"
+    planner_fewshot: "./prompts/planner_fewshot.md"
+
+  schemas:
+    scenario_features: "./schemas/scenario_features.json"
+    linked_list: "./schemas/linked_list.json"
+    output: "./schemas/output.json"
+
+  rag_hints: "./rag/hints.yaml"
+
+  pg_tables:
+    rag: "etcs_rag_nodes"
+    cache: "etcs_semantic_cache"

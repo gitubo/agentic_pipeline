@@ -1,0 +1,78 @@
+{
+  "id": "emergency_stop_basic",
+  "description": "Emergency stop scenario: train already in FS mode receives a revised MA with very short section (200m) and V_RELEASESPEED=0, forcing an immediate stop. Train acknowledges and reports stopped position.",
+  "features": {
+    "initial_mode": "FS",
+    "train_category": "P1",
+    "sections_count": 1,
+    "speeds_kmh": [0],
+    "eoa_m": 200,
+    "gradient": false,
+    "overlap": false,
+    "v_release_kmh": 0
+  },
+  "chain": [
+    {
+      "step": 1,
+      "nid_message": 0,
+      "name": "PositionReport",
+      "direction": "train→rbc",
+      "scenario_params": {
+        "V_TRAIN": 160,
+        "M_MODE": 0,
+        "M_LEVEL": 2,
+        "D_LRBG": 0
+      },
+      "to_instantiate": ["Q_SCALE", "NID_LRBG", "M_ACK", "Q_LENGTH"],
+      "notes": "Train in FS at line speed before emergency MA is issued"
+    },
+    {
+      "step": 2,
+      "nid_message": 3,
+      "name": "MovementAuthority",
+      "direction": "rbc→train",
+      "scenario_params": {
+        "N_ITER": 1,
+        "V_RELEASESPEED": 0,
+        "Q_OVERLAP": 0,
+        "sections": [
+          {
+            "V_STATIC": 0,
+            "L_SECTION": 200,
+            "Q_SECTIONTIMER": 0
+          }
+        ]
+      },
+      "to_instantiate": ["Q_SCALE", "M_ACK"],
+      "packets": [],
+      "notes": "Emergency MA: short section, V_STATIC=0 and V_RELEASESPEED=0 — forces train to stop before EOA"
+    },
+    {
+      "step": 3,
+      "nid_message": 8,
+      "name": "Acknowledgement",
+      "direction": "train→rbc",
+      "scenario_params": {
+        "T_TRAIN_ref": 0
+      },
+      "to_instantiate": ["M_ACK", "T_TRAIN", "NID_LRBG"],
+      "notes": "Driver acknowledges emergency MA"
+    },
+    {
+      "step": 4,
+      "nid_message": 0,
+      "name": "PositionReport",
+      "direction": "train→rbc",
+      "scenario_params": {
+        "V_TRAIN": 0,
+        "M_MODE": 0,
+        "M_LEVEL": 2,
+        "D_LRBG": 100
+      },
+      "to_instantiate": ["Q_SCALE", "NID_LRBG", "M_ACK", "Q_LENGTH"],
+      "notes": "Train reports stopped position in FS mode — emergency braking complete"
+    }
+  ],
+  "validated": true,
+  "spec_version": "subset026-3.6.0"
+}

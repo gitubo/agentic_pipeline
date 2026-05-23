@@ -1,0 +1,92 @@
+{
+  "id": "session_establishment",
+  "description": "Session establishment and first MA: train powers up in SB mode, driver initiates start of mission transitioning to SR, radio session is established, RBC issues MA at 160 km/h over 3000m, train acknowledges and enters FS mode.",
+  "features": {
+    "initial_mode": "SB",
+    "train_category": "P1",
+    "sections_count": 1,
+    "speeds_kmh": [160],
+    "eoa_m": 3000,
+    "gradient": false,
+    "overlap": false
+  },
+  "chain": [
+    {
+      "step": 1,
+      "nid_message": 0,
+      "name": "PositionReport",
+      "direction": "train→rbc",
+      "scenario_params": {
+        "V_TRAIN": 0,
+        "M_MODE": 9,
+        "M_LEVEL": 2,
+        "D_LRBG": 0
+      },
+      "to_instantiate": ["Q_SCALE", "NID_LRBG", "M_ACK", "Q_LENGTH"],
+      "notes": "Train powers up — reports initial position in SB mode"
+    },
+    {
+      "step": 2,
+      "nid_message": 0,
+      "name": "PositionReport",
+      "direction": "train→rbc",
+      "scenario_params": {
+        "V_TRAIN": 0,
+        "M_MODE": 3,
+        "M_LEVEL": 2,
+        "D_LRBG": 0
+      },
+      "to_instantiate": ["Q_SCALE", "NID_LRBG", "M_ACK", "Q_LENGTH"],
+      "notes": "Driver starts mission — SB→SR transition; radio session established; train reports SR mode"
+    },
+    {
+      "step": 3,
+      "nid_message": 3,
+      "name": "MovementAuthority",
+      "direction": "rbc→train",
+      "scenario_params": {
+        "N_ITER": 1,
+        "V_RELEASESPEED": 30,
+        "Q_OVERLAP": 0,
+        "sections": [
+          {
+            "V_STATIC": 160,
+            "L_SECTION": 3000,
+            "Q_SECTIONTIMER": 0
+          }
+        ]
+      },
+      "to_instantiate": ["Q_SCALE", "M_ACK"],
+      "packets": [],
+      "notes": "First MA issued after session establishment: 3000m at 160 km/h"
+    },
+    {
+      "step": 4,
+      "nid_message": 8,
+      "name": "Acknowledgement",
+      "direction": "train→rbc",
+      "scenario_params": {
+        "T_TRAIN_ref": 0
+      },
+      "to_instantiate": ["M_ACK", "T_TRAIN", "NID_LRBG"],
+      "notes": "Train acknowledges first MA — SR→FS transition follows"
+    },
+    {
+      "step": 5,
+      "nid_message": 0,
+      "name": "PositionReport",
+      "direction": "train→rbc",
+      "mode_after": "FS",
+      "scenario_params": {
+        "V_TRAIN": 0,
+        "M_MODE": 0,
+        "M_LEVEL": 2,
+        "D_LRBG": 0
+      },
+      "to_instantiate": ["Q_SCALE", "NID_LRBG", "M_ACK", "Q_LENGTH"],
+      "notes": "Train confirms FS mode — session establishment and first MA complete"
+    }
+  ],
+  "validated": true,
+  "spec_version": "subset026-3.6.0"
+}

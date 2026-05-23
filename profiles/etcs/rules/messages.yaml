@@ -1,0 +1,99 @@
+version: "subset026-3.6.0"
+
+messages:
+
+  - nid_message: 0
+    name: PositionReport
+    direction: "train→rbc"
+    spec_ref: "Subset-026 §8.4.1"
+    required_fields:
+      - name: Q_SCALE
+        type: enum
+        values: [0, 1, 2]
+        spec_ref: "Table 4"
+      - name: NID_LRBG
+        type: uint
+        spec_ref: "§7.4.2.3"
+      - name: D_LRBG
+        type: uint
+        min: 0
+        spec_ref: "§7.4.2.4"
+      - name: V_TRAIN
+        type: uint
+        min: 0
+        max: 600
+        spec_ref: "§7.4.2.5"
+      - name: M_MODE
+        type: enum
+        values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+        spec_ref: "Table 5"
+      - name: M_LEVEL
+        type: enum
+        values: [0, 1, 2, 3]
+        spec_ref: "Table 6"
+      - name: Q_LENGTH
+        type: enum
+        values: [0, 1, 2, 3]
+        spec_ref: "§7.5.1.36"
+    conditional_fields:
+      - name: L_TRAININT
+        type: uint
+        condition: "Q_LENGTH in [0, 2]"
+        spec_ref: "§7.5.1.36 Note 1"
+
+  - nid_message: 3
+    name: MovementAuthority
+    direction: "rbc→train"
+    spec_ref: "Subset-026 §8.4.3"
+    required_fields:
+      - name: Q_SCALE
+        type: enum
+        values: [0, 1, 2]
+        spec_ref: "Table 4"
+      - name: N_ITER
+        type: uint
+        min: 1
+        max: 32
+        spec_ref: "§8.4.3.2"
+      - name: V_RELEASESPEED
+        type: uint
+        spec_ref: "§7.5.1.26"
+    conditional_fields:
+      - name: T_SECTIONTIMER
+        type: uint
+        condition: "Q_SECTIONTIMER == 1"
+        spec_ref: "§7.5.1.x"
+      - name: D_SECTIONTIMERSTOPLOC
+        type: uint
+        condition: "Q_SECTIONTIMER == 1"
+        spec_ref: "§7.5.1.x"
+      - name: D_STARTOL
+        type: uint
+        condition: "Q_OVERLAP == 1"
+        spec_ref: "§7.5.1.x"
+      - name: T_OL
+        type: uint
+        condition: "Q_OVERLAP == 1"
+        spec_ref: "§7.5.1.x"
+      - name: D_OL
+        type: uint
+        condition: "Q_OVERLAP == 1"
+        spec_ref: "§7.5.1.x"
+    packets:
+      optional: [21, 27, 58, 65, 72, 80]
+      required_if:
+        - packet: 72
+          condition: "len(scenario.linking_balises) > 0"
+        - packet: 21
+          condition: "len(scenario.gradient_profile) > 0"
+        - packet: 27
+          condition: "len(scenario.speed_profile) > 1"
+
+  - nid_message: 8
+    name: Acknowledgement
+    direction: "train→rbc"
+    spec_ref: "Subset-026 §8.4.5"
+    required_fields:
+      - name: T_TRAIN_ref
+        type: uint
+        spec_ref: "§8.4.5.1"

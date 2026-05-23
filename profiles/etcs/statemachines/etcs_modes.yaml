@@ -1,0 +1,85 @@
+version: "subset026-3.6.0"
+
+states:
+  - id: NP
+    name: "No Power"
+    m_mode_value: 8
+  - id: SB
+    name: "Stand By"
+    m_mode_value: 9
+  - id: SR
+    name: "Staff Responsible"
+    m_mode_value: 3
+  - id: FS
+    name: "Full Supervision"
+    m_mode_value: 0
+  - id: OS
+    name: "On Sight"
+    m_mode_value: 1
+  - id: SH
+    name: "Shunting"
+    m_mode_value: 2
+  - id: SF
+    name: "System Failure"
+    m_mode_value: 4
+
+transitions:
+  - from: SR
+    to: FS
+    trigger: ma_received_and_acked
+    required_sequence:
+      - nid_message: 3
+      - nid_message: 8
+    spec_ref: "Subset-026 §4.6.3"
+
+  - from: FS
+    to: SR
+    trigger: ma_expired_or_missing
+    spec_ref: "Subset-026 §4.6.4"
+
+  - from: FS
+    to: OS
+    trigger: mode_profile_on_sight
+    required_messages: [3]
+    spec_ref: "Subset-026 §4.6.5"
+
+  - from: FS
+    to: SF
+    trigger: system_failure
+    spec_ref: "Subset-026 §4.6.10"
+
+  - from: SB
+    to: SR
+    trigger: driver_action
+    spec_ref: "Subset-026 §4.6.2"
+
+initial_state: SB
+
+# ── Config read by StateMachineValidator (not hardcoded in core) ──────────────
+mode_tracking:
+  nid_message: 0        # message type that carries the operational mode
+  field: M_MODE         # field containing the mode value
+
+session_carrier_nid_message: 3   # message that establishes the session (heuristic)
+
+pre_session_guard:
+  guarded_nid_message: 3         # message type that requires an active session
+  error_code: STATE_MA_BEFORE_SESSION
+  spec_ref: "Subset-026 §4.6"
+
+mode_requires_prior_check:
+  mode_value: 0                  # mode field value (FS = 0)
+  prior_nid_message: 3           # message that must precede this mode
+  error_code: STATE_FS_WITHOUT_MA
+  spec_ref: "Subset-026 §4.6"
+
+validation_rules:
+  - rule: ma_requires_session
+    description: "NID_MESSAGE=3 requires an established radio session"
+    check: "msg(3).step > session_established_step"
+    error_code: "STATE_MA_BEFORE_SESSION"
+
+  - rule: fs_requires_ma
+    description: "M_MODE=0 (FS) in Position Report requires a prior MA"
+    check: "if posrep.M_MODE == 0 then ma_step < posrep.step"
+    error_code: "STATE_FS_WITHOUT_MA"

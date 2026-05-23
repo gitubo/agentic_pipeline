@@ -1,0 +1,99 @@
+{
+  "id": "ma_gradient",
+  "description": "MA with gradient profile: train in SR mode, single section at 160 km/h over 2500m with uphill gradient +8‰ for the first 1000m then flat. MA includes Packet 21 (Gradient Profile).",
+  "features": {
+    "initial_mode": "SR",
+    "train_category": "P1",
+    "sections_count": 1,
+    "speeds_kmh": [160],
+    "eoa_m": 2500,
+    "gradient": true,
+    "gradient_description": "+8 permille for 1000m then flat",
+    "overlap": false
+  },
+  "chain": [
+    {
+      "step": 1,
+      "nid_message": 0,
+      "name": "PositionReport",
+      "direction": "train→rbc",
+      "scenario_params": {
+        "V_TRAIN": 0,
+        "M_MODE": 3,
+        "M_LEVEL": 2,
+        "D_LRBG": 0
+      },
+      "to_instantiate": ["Q_SCALE", "NID_LRBG", "M_ACK", "Q_LENGTH"],
+      "notes": "Initial position report in SR mode before MA"
+    },
+    {
+      "step": 2,
+      "nid_message": 3,
+      "name": "MovementAuthority",
+      "direction": "rbc→train",
+      "scenario_params": {
+        "N_ITER": 1,
+        "V_RELEASESPEED": 30,
+        "Q_OVERLAP": 0,
+        "sections": [
+          {
+            "V_STATIC": 160,
+            "L_SECTION": 2500,
+            "Q_SECTIONTIMER": 0
+          }
+        ]
+      },
+      "to_instantiate": ["Q_SCALE", "M_ACK"],
+      "packets": [
+        {
+          "nid_packet": 21,
+          "name": "GradientProfile",
+          "scenario_params": {
+            "N_ITER": 2,
+            "segments": [
+              {
+                "D_GRADIENT": 0,
+                "Q_GDIR": 1,
+                "G_A": 8
+              },
+              {
+                "D_GRADIENT": 1000,
+                "Q_GDIR": 0,
+                "G_A": 0
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "MA with Packet 21: +8‰ uphill for 1000m then flat. Q_GDIR=1=uphill, Q_GDIR=0=flat."
+    },
+    {
+      "step": 3,
+      "nid_message": 8,
+      "name": "Acknowledgement",
+      "direction": "train→rbc",
+      "scenario_params": {
+        "T_TRAIN_ref": 0
+      },
+      "to_instantiate": ["M_ACK", "T_TRAIN", "NID_LRBG"],
+      "notes": "Train acknowledges MA with gradient profile"
+    },
+    {
+      "step": 4,
+      "nid_message": 0,
+      "name": "PositionReport",
+      "direction": "train→rbc",
+      "mode_after": "FS",
+      "scenario_params": {
+        "V_TRAIN": 0,
+        "M_MODE": 0,
+        "M_LEVEL": 2,
+        "D_LRBG": 0
+      },
+      "to_instantiate": ["Q_SCALE", "NID_LRBG", "M_ACK", "Q_LENGTH"],
+      "notes": "Train in FS mode after MA transition — gradient data active in on-board braking model"
+    }
+  ],
+  "validated": true,
+  "spec_version": "subset026-3.6.0"
+}

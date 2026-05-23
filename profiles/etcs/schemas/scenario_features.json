@@ -1,0 +1,175 @@
+{
+  "$defs": {
+    "GradientSegment": {
+      "properties": {
+        "distance_m": {
+          "title": "Distance M",
+          "type": "number"
+        },
+        "gradient_permille": {
+          "title": "Gradient Permille",
+          "type": "number"
+        }
+      },
+      "required": [
+        "distance_m",
+        "gradient_permille"
+      ],
+      "title": "GradientSegment",
+      "type": "object"
+    },
+    "Position": {
+      "properties": {
+        "bg_id": {
+          "title": "Bg Id",
+          "type": "integer"
+        },
+        "distance_m": {
+          "title": "Distance M",
+          "type": "number"
+        }
+      },
+      "required": [
+        "bg_id",
+        "distance_m"
+      ],
+      "title": "Position",
+      "type": "object"
+    },
+    "Section": {
+      "properties": {
+        "length_m": {
+          "title": "Length M",
+          "type": "number"
+        },
+        "v_max_kmh": {
+          "title": "V Max Kmh",
+          "type": "number"
+        },
+        "has_timer": {
+          "default": false,
+          "title": "Has Timer",
+          "type": "boolean"
+        },
+        "timer_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timer S"
+        },
+        "timer_stop_loc_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timer Stop Loc M"
+        }
+      },
+      "required": [
+        "length_m",
+        "v_max_kmh"
+      ],
+      "title": "Section",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "train_id": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Train Id"
+    },
+    "train_category": {
+      "default": "P1",
+      "title": "Train Category",
+      "type": "string"
+    },
+    "train_length_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Train Length M"
+    },
+    "initial_mode": {
+      "title": "Initial Mode",
+      "type": "string"
+    },
+    "initial_position": {
+      "$ref": "#/$defs/Position"
+    },
+    "sections": {
+      "items": {
+        "$ref": "#/$defs/Section"
+      },
+      "title": "Sections",
+      "type": "array"
+    },
+    "eoa_distance_m": {
+      "title": "Eoa Distance M",
+      "type": "number"
+    },
+    "v_release_kmh": {
+      "default": 30.0,
+      "title": "V Release Kmh",
+      "type": "number"
+    },
+    "overlap_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Overlap M"
+    },
+    "gradient_profile": {
+      "items": {
+        "$ref": "#/$defs/GradientSegment"
+      },
+      "title": "Gradient Profile",
+      "type": "array"
+    },
+    "requires_clarification": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Requires Clarification",
+      "type": "array"
+    }
+  },
+  "required": [
+    "initial_mode",
+    "initial_position",
+    "sections",
+    "eoa_distance_m"
+  ],
+  "title": "ScenarioFeatures",
+  "type": "object"
+}

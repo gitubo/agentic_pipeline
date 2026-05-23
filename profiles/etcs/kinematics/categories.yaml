@@ -1,0 +1,50 @@
+version: "1.0"
+
+# Message types subject to kinematic checks
+checked_nid_messages: [3]
+
+categories:
+
+  - id: P1
+    name: "Passenger Category 1"
+    max_speed_kmh: 350
+    typical_deceleration_ms2: 0.9
+    emergency_deceleration_ms2: 1.2
+    min_section_time_factor: 0.5
+
+  - id: P2
+    name: "Passenger Category 2"
+    max_speed_kmh: 200
+    typical_deceleration_ms2: 0.7
+    emergency_deceleration_ms2: 1.0
+    min_section_time_factor: 0.5
+
+  - id: F1
+    name: "Freight Category 1"
+    max_speed_kmh: 140
+    typical_deceleration_ms2: 0.4
+    emergency_deceleration_ms2: 0.6
+    min_section_time_factor: 0.4
+
+checks:
+
+  - id: section_timer_feasibility
+    description: "T_SECTIONTIMER must be traversable at maximum speed"
+    formula: "T_SECTIONTIMER >= (L_SECTION / v_max_ms) * min_section_time_factor"
+    severity: error
+    error_code: "KINE_SECTION_TIMER_TOO_SHORT"
+    spec_ref: "Physics"
+
+  - id: overlap_braking_distance
+    description: "D_OL must be sufficient to brake from V_RELEASESPEED"
+    formula: "D_OL >= (v_release_ms ^ 2) / (2 * emergency_deceleration_ms2)"
+    severity: warning
+    error_code: "KINE_OVERLAP_SHORT_FOR_RELEASE_SPEED"
+    spec_ref: "Physics + Subset-026 §3.14"
+
+  - id: speed_vs_category_max
+    description: "V_STATIC must not exceed the category maximum speed"
+    formula: "V_STATIC_kmh <= category.max_speed_kmh"
+    severity: error
+    error_code: "KINE_SPEED_EXCEEDS_CATEGORY_MAX"
+    spec_ref: "Subset-026 §7.5.1"

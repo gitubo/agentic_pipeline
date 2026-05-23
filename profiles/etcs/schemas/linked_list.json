@@ -1,0 +1,282 @@
+{
+  "$defs": {
+    "Direction": {
+      "enum": [
+        "train\u2192rbc",
+        "rbc\u2192train"
+      ],
+      "title": "Direction",
+      "type": "string"
+    },
+    "GradientSegment": {
+      "properties": {
+        "distance_m": {
+          "title": "Distance M",
+          "type": "number"
+        },
+        "gradient_permille": {
+          "title": "Gradient Permille",
+          "type": "number"
+        }
+      },
+      "required": [
+        "distance_m",
+        "gradient_permille"
+      ],
+      "title": "GradientSegment",
+      "type": "object"
+    },
+    "MessageNode": {
+      "properties": {
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "nid_message": {
+          "title": "Nid Message",
+          "type": "integer"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "scenario_params": {
+          "additionalProperties": true,
+          "title": "Scenario Params",
+          "type": "object"
+        },
+        "to_instantiate": {
+          "items": {
+            "type": "string"
+          },
+          "title": "To Instantiate",
+          "type": "array"
+        },
+        "packets": {
+          "items": {
+            "$ref": "#/$defs/PacketNode"
+          },
+          "title": "Packets",
+          "type": "array"
+        },
+        "planner_notes": {
+          "default": "",
+          "title": "Planner Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "step",
+        "nid_message",
+        "name",
+        "direction"
+      ],
+      "title": "MessageNode",
+      "type": "object"
+    },
+    "PacketNode": {
+      "properties": {
+        "nid_packet": {
+          "title": "Nid Packet",
+          "type": "integer"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "scenario_params": {
+          "additionalProperties": true,
+          "title": "Scenario Params",
+          "type": "object"
+        }
+      },
+      "required": [
+        "nid_packet",
+        "name"
+      ],
+      "title": "PacketNode",
+      "type": "object"
+    },
+    "Position": {
+      "properties": {
+        "bg_id": {
+          "title": "Bg Id",
+          "type": "integer"
+        },
+        "distance_m": {
+          "title": "Distance M",
+          "type": "number"
+        }
+      },
+      "required": [
+        "bg_id",
+        "distance_m"
+      ],
+      "title": "Position",
+      "type": "object"
+    },
+    "ScenarioFeatures": {
+      "properties": {
+        "train_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Train Id"
+        },
+        "train_category": {
+          "default": "P1",
+          "title": "Train Category",
+          "type": "string"
+        },
+        "train_length_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Train Length M"
+        },
+        "initial_mode": {
+          "title": "Initial Mode",
+          "type": "string"
+        },
+        "initial_position": {
+          "$ref": "#/$defs/Position"
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/$defs/Section"
+          },
+          "title": "Sections",
+          "type": "array"
+        },
+        "eoa_distance_m": {
+          "title": "Eoa Distance M",
+          "type": "number"
+        },
+        "v_release_kmh": {
+          "default": 30.0,
+          "title": "V Release Kmh",
+          "type": "number"
+        },
+        "overlap_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Overlap M"
+        },
+        "gradient_profile": {
+          "items": {
+            "$ref": "#/$defs/GradientSegment"
+          },
+          "title": "Gradient Profile",
+          "type": "array"
+        },
+        "requires_clarification": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Requires Clarification",
+          "type": "array"
+        }
+      },
+      "required": [
+        "initial_mode",
+        "initial_position",
+        "sections",
+        "eoa_distance_m"
+      ],
+      "title": "ScenarioFeatures",
+      "type": "object"
+    },
+    "Section": {
+      "properties": {
+        "length_m": {
+          "title": "Length M",
+          "type": "number"
+        },
+        "v_max_kmh": {
+          "title": "V Max Kmh",
+          "type": "number"
+        },
+        "has_timer": {
+          "default": false,
+          "title": "Has Timer",
+          "type": "boolean"
+        },
+        "timer_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timer S"
+        },
+        "timer_stop_loc_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timer Stop Loc M"
+        }
+      },
+      "required": [
+        "length_m",
+        "v_max_kmh"
+      ],
+      "title": "Section",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "spec_version": {
+      "title": "Spec Version",
+      "type": "string"
+    },
+    "scenario_features": {
+      "$ref": "#/$defs/ScenarioFeatures"
+    },
+    "messages": {
+      "items": {
+        "$ref": "#/$defs/MessageNode"
+      },
+      "title": "Messages",
+      "type": "array"
+    }
+  },
+  "required": [
+    "spec_version",
+    "scenario_features",
+    "messages"
+  ],
+  "title": "LinkedList",
+  "type": "object"
+}

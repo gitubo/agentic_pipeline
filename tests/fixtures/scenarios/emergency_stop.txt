@@ -1,0 +1,1 @@
+Emergency stop from RBC with train in FS mode at 150 km/h, train must halt immediately
